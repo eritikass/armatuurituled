@@ -1,0 +1,301 @@
+<html>
+  <head>
+    <title>armatuurituled</title>
+
+    <script>
+      let isDebug = false;
+
+      const row1 = 22;
+      const row2 = 82;
+
+      const centerRow1 = 150;
+      const centerRow2 = 207;
+      const centerRow3 = 268;
+      const centerRow4 = 330;
+
+      const signs = {
+        // row 1
+        "1": [0, row1, 'Eesmised udutuled põlevad'],
+        "2": [55, row1, 'Roolivõim on kahjustusega. Seda hoiatust ei tohi kunagi eirata. Roolivõim võib lõpetada töötamise üsna kiiresti.'],
+        "3": [105, row1, 'Tagumised udutuled põlevad.'],
+        "4": [155, row1, 'Aknapesuvedeliku tase on madal.'],
+        "5": [204, row1, 'Piduriklotsid on läbi.'],
+        "6": [250, row1, 'Püsikiirusehoidja on sees.'],
+        "7": [300, row1, 'Suunatuled.'],
+        "8": [350, row1, 'Vihma- ja valgusesensor. Kui see põleb, siis ei pruugi need töötada.'],
+        "9": [400, row1, 'Talve režiim – Annab märku, et auto on lülitanud ümber talve režiimile. Automaatkäigukastide puhul tähendab, et auto vahetab suurematele käikudele, et vältida rataste pöörlemist.'],
+        "10": [441, row1, 'Informatsiooni edastus tuli.'],
+        "11": [490, row1, 'Eelsüüteküünlad. Enne auto käivitamist tuleb oodata, kuni tuli kustub.'],
+        "12": [540, row1, 'Libeda tee hoiatus. Hoiatab juhti, et tee olud on libedad ja tuleb olla tähelepanelik.'],
+        "13": [585, row1, 'Probleem võtmega. Levinud moodsamatel autodel, kui autol tekib probleeme võtmelt signaali kättesaamisega, siis see tuli annab märku sellest.'],
+        "14": [625, row1, 'Võti ei ole leitud. Auto ei tuvasta enda läheduses võtit.'],
+        "15": [670, row1, 'Võtme patarei vajab välja vahetamist.'],
+        "16": [715, row1, 'Hoia distantsi! Võimalik kokkupõrge eesoleva sõidukiga, tõkkega või esemega.'],
+
+        // row2
+        "17": [7, row2, 40, 'Sidurit tuleb alla vajutada. Meeldetuletus, et hoida sidurit all enne auto käivitamist.'],
+        "18": [50, row2, 47, 'Pidurit tuleb all hoida. Meeldetuletus, et hoida piduri pedaali all enne auto käivitamist.'],
+        "19": [97, row2, 45, 'Rool on lukus.'],
+        "20": [140, row2, 45, 'Kaugtuled on sees.'],
+        "21": [185, row2, 40, 'Madal rõhk rehvides.'],
+        "22": [225, row2, 45, 'Auto tuled külgedel põlevad.'],
+        "23": [270, row2, 45, 'Auto külgtuled ei põle.'],
+        "24": [315, row2, 45, 'Pidurituled ei tööta.'],
+        "25": [360, row2, 45, 'DPF filtrit tuleb puhastada või välja vahetada.'],
+        "26": [405, row2, 45, 'Probleem veokonksuga. Võibolla ei ole õigesti kinnitatud.'],
+        "27": [453, row2, 50, 'Probleem õhkvedrustusega. Kontrollige patju ja kompressorit.'],
+        "28": [505, row2, 45, 'Rea vahetus toimub ilma suunatuleta.'],
+        "29": [550, row2, 45, 'Katalüsaator on ülekuumenenud.'],
+        "30": [590, row2, 45, 'Tuleb kinnitada Turvavöö, võib põleda, kui istmele on asetatud raske ese.'],
+        "31": [633, row2, 45, 'Käsipidur on peal.'],
+        "32": [675, row2, 45, 'Aku on tühi.'],
+        "33": [720, row2, 45, 'Parkimisandurid on mustad ja vajavad puhastamist.'],
+
+        // center block
+        "34": [230, centerRow1, 45, 'Auto peab minema servisesse hooldustöödeks.'],
+        "35": [280, centerRow1, 45, 'Probleemid isereguleerivate kaug- ja lähituledega. Andruitel on mustus peal ja vajavad puhastust.'],
+        "36": [330, centerRow1, 45, 'Automaatne tulede reguleerimine ei tööta.'],
+        "37": [370, centerRow1, 45, 'Kui teil on sport auto ja see tuli põleb, siis kontrollige oma tagumist spoilerit.'],
+        "38": [415, centerRow1, 45, 'Kui teil on kabriolett, siis on probleem teie katusega.'],
+        "39": [460, centerRow1, 45, 'Probleem turvapatjadega.'],
+        "40": [505, centerRow1, 45, 'Probleemid pidurite hüdraulilise süsteemiga.'],
+
+        "41": [265, centerRow2, 45, 'Auto on tuvastanud vett kütusefiltris.'],
+        "42": [315, centerRow2, 45, 'Üks turvapadi on manuaalselt välja lülitatud.'],
+        "43": [355, centerRow2, 55, 'Probleem mootoriga.'],
+        "44": [415, centerRow2, 45, 'Eesmised udutuled on sees.'],
+        "45": [460, centerRow2, 50, 'Ummistunud õhufilter.'],
+
+        "46": [268, centerRow3, 45, 'Öko sõitmisreziim on käivitatud.'],
+        "47": [315, centerRow3, 45, 'Mäest allalaskumise režiim on käivitatud.'],
+        "48": [365, centerRow3, 55, 'Mootor on ülekuumenenud.'],
+        "49": [410, centerRow3, 55, 'ABS ei tööta.'],
+        "50": [460, centerRow3, 45, 'Kütusefilter on ummistunud.'],
+
+        "51": [258, centerRow4, 37, 'Uks lahti. Kui uksed on kinni, siis võib olla probleem elektroonika osa pealt või kaitsmetes.'],
+        "52": [295, centerRow4, 55, 'Auto kapott avatud.'],
+        "53": [345, centerRow4, 40, 'Autos on vähe kütust.'],
+        "54": [385, centerRow4, 40, 'Probleemid automaatkäigukastis.'],
+        "55": [430, centerRow4, 50, 'Automaatne kiirusepiiraja käivitatud.'],
+        "56": [475, centerRow4, 45, 'Puksid on läbi.'],
+
+        // left circel
+        "57": [80, 207, 55, 'Madal õlitase, madal õli surve, probleemid pumbaga.'],
+        "58": [140, 207, 45, 'Esiklaasi soojendus.'],
+        "59": [50, 265, 50, 'Auto tagaluuk on avatud.'],
+        "60": [160, 266, 55, 'Veojõukontroll on väljas.'],
+
+        // right circel
+        "61": [590, 219, 45, 'Probleemid vihmaanduriga.'],
+        "62": [640, 219, 45, 'Mootorituli, sellest tulenevad probleemid võivad varieeruda väikestest probleemidest suurteni. Igal juhul ei tasu seda eirata.'],
+        "63": [560, 267, 50, 'Tagaklaasi soojendus on sees.'],
+        "64": [665, 270, 40, 'Probleemid kojameestega.'],
+      };
+
+      const signs_correct = {};
+      const signs_wrong = {};
+      const signs_seen = {};
+
+      const signs_not_seen = JSON.parse(JSON.stringify(signs));
+    </script>
+  </html>
+  <body>
+    <div id="armatuurituled" style="display: inline-block;background: url(./armatuurituled.jpeg) no-repeat -110px -22px;height: 40px;width: 55px;"></div>
+    <div id="answers">
+      <ul>
+        <li id="answer1"></li>
+        <li id="answer2"></li>
+        <li id="answer3"></li>
+        <li id="answer4"></li>
+      </ul>
+    </div>
+
+    <button id="show_next" style="display:none;">show random next</button>
+    <button id="show_wrong" style="display:none;">show wrong</button>
+    <button id="show_not_seen" style="display:none;">show not seen</button>
+
+    <div id="summary"></div>
+    <br />
+
+    <div id="go-debug" style="background: url(./armatuurituled.jpeg) no-repeat;width: 768px;height: 403px;position: relative;display:none;">
+
+    </div>
+
+    <script>
+      const p = document.getElementById('armatuurituled');
+      function getTitle(data) {
+        if (typeof data[2] === 'string') {
+          return data[2];
+        }
+        return data[3]
+      }
+      function getWidth(data) {
+        if (typeof data[2] === 'number') {
+          return data[2];
+        }
+        return 55;
+      }
+      function showSummary() {
+        document.getElementById('summary').innerHTML = `wrong=${Object.keys(signs_wrong).length}; correct=${Object.keys(signs_correct).length}; seen=${Object.keys(signs_seen).length}; total=${Object.keys(signs).length}`;
+      }
+      function showQuestion(id, forceRender = false) {
+        document.getElementById('show_next').style.display = 'none';
+
+        signs_seen[id] = '';
+        delete signs_not_seen[id];
+
+        const data = signs[id];
+        const oldId = p.getAttribute('data-id');
+
+        const bg = 'url(./armatuurituled.jpeg) -' + data[0] + 'px -' + (data[1] - ( isDebug ? 15 : 0 )) + 'px no-repeat';
+        p.style.background = bg;
+
+        p.style.width = getWidth(data) + 'px';
+        if (isDebug) {
+          p.style.height = '55px';
+          document.getElementById('go-debug').style.display = '';
+        } else {
+          p.style.height = '40px';
+          document.getElementById('go-debug').style.display = 'none';
+        }
+
+        if (oldId === id && !forceRender) {
+          return;
+        }
+
+        p.setAttribute('data-id', id);
+
+        const correct = (Math.floor(Math.random() * 4) + 1);
+
+        const q1 = Object.values(signs).map(s => getTitle(s));
+        console.log('q1', q1);
+        const used = [data[2]];
+
+        document.getElementById(`answers`).setAttribute('data-first-correct', 'true');
+        for (i = 1; i <= 4; i++) {
+          document.getElementById(`answer${i}`).style.color = ''
+
+          if (correct === i) {
+            document.getElementById(`answer${i}`).innerHTML = getTitle(data);
+            document.getElementById(`answer${i}`).setAttribute('data-correct', 'true');
+            continue;
+          }
+          do {
+            const v = q1[Math.floor(Math.random() * q1.length)];
+            if (v && !used.includes(v)) {
+              document.getElementById(`answer${i}`).innerHTML = v;
+              document.getElementById(`answer${i}`).setAttribute('data-correct', 'false');
+              used.push(v);
+              break;
+            }
+          } while(true);
+        }
+
+
+        showSummary();
+      }
+      function showNext() {
+        const ids = Object.keys(signs);
+        const nextId = ids[Math.floor(Math.random() * ids.length)];
+        showQuestion(nextId, true);
+      }
+      function showWrong() {
+        const ids = Object.keys(signs_wrong);
+        const nextId = ids[Math.floor(Math.random() * ids.length)];
+        showQuestion(nextId, true);
+      }
+      function showNotSeen() {
+        const ids = Object.keys(signs_not_seen);
+        const nextId = ids[Math.floor(Math.random() * ids.length)];
+        showQuestion(nextId, true);
+      }
+
+      p.addEventListener('click', function (event) {
+        const id = p.getAttribute('data-id');
+        if (id) {
+          isDebug = !isDebug;
+          showQuestion(id);
+        }
+      });
+
+      document.getElementById('show_next').addEventListener(`click`, function (event) {
+        showNext();
+      });
+      document.getElementById('show_wrong').addEventListener(`click`, function (event) {
+        showWrong();
+      });
+      document.getElementById('show_not_seen').addEventListener(`click`, function (event) {
+        showNotSeen();
+      });
+
+      for (i = 1; i <= 4; i++) {
+        ((ii) => {
+          document.getElementById(`answer${ii}`).addEventListener(`click`, function (event) {
+            const firstCorrect = document.getElementById(`answers`).getAttribute('data-first-correct') === 'true';
+            const id = p.getAttribute('data-id');
+
+            const isCorrect =  document.getElementById(`answer${ii}`).getAttribute('data-correct') === 'true';
+            document.getElementById(`answer${ii}`).style.color = isCorrect ? 'green' : 'red';
+
+            if (isCorrect) {
+              document.getElementById('show_next').style.display = 'block';
+              if (firstCorrect) {
+                signs_correct[id] = '';
+              }
+
+              if (Object.keys(signs_wrong).length) {
+                document.getElementById('show_wrong').style.display = 'block';
+              } else {
+                document.getElementById('show_wrong').style.display = 'none';
+              }
+
+              if (Object.keys(signs_not_seen).length) {
+                document.getElementById('show_not_seen').style.display = 'block';
+              } else {
+                document.getElementById('show_not_seen').style.display = 'none';
+              }
+
+            } else {
+              if (firstCorrect) {
+                document.getElementById(`answers`).setAttribute('data-first-correct', 'false');
+                signs_wrong[id] = '';
+              }
+            }
+
+            showSummary();
+          });
+        })(i);
+      }
+
+      setTimeout(showNext, 50);
+
+      let color = 'yellow';
+      Object.keys(signs).forEach(id => {
+        color = color === 'yellow' ? 'white' : 'yellow';
+
+        const data = signs[id];
+        const goDebug = document.getElementById('go-debug');
+        const d = document.createElement('div');
+        d.addEventListener(`click`, function (event) {
+          showQuestion(id);
+        });
+        d.setAttribute('id', 'debug_' + id);
+        d.setAttribute('data-id', id);
+        d.setAttribute('title', getTitle(data));
+        d.innerHTML = id;
+        d.style.position = 'absolute';
+        d.style.color = color;
+        d.style.textAlign = 'center';
+        d.style.border = '1px dotted ' + color;
+        d.style.height = '40px';
+        d.style.width = getWidth(data) + 'px';
+        d.style.top = data[1] + 'px';
+        d.style.left = data[0] + 'px';
+        goDebug.appendChild(d);
+      })
+    </script>
+
+    <p />
+    <a target="_blank" href="https://www.autodna.ee/blog/mida-armatuurituli-tahendab/">data</a>
+  </body>
+</html>
