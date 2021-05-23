@@ -110,10 +110,11 @@
       </ul>
     </div>
 
-    <button id="show_next" style="display:none;">show random next</button>
-    <button id="show_wrong" style="display:none;">show wrong</button>
     <button id="show_not_seen" style="display:none;">show not seen</button>
+    <button id="show_wrong" style="display:none;">show wrong</button>
+    <button id="show_next" style="display:none;">show random next</button>
 
+    <br />
     <div id="summary"></div>
     <br />
 
@@ -136,7 +137,10 @@
         return 55;
       }
       function showSummary() {
-        document.getElementById('summary').innerHTML = `wrong=${Object.keys(signs_wrong).length}; correct=${Object.keys(signs_correct).length}; seen=${Object.keys(signs_seen).length}; total=${Object.keys(signs).length}`;
+        document.getElementById('summary').innerHTML = `wrong=<strong>${Object.keys(signs_wrong).length}</strong>;
+          correct=<strong>${Object.keys(signs_correct).length}</strong>;
+          seen=<strong>${Object.keys(signs_seen).length}</strong>;
+          total=<strong>${Object.keys(signs).length}</strong>`;
       }
       function showQuestion(id, forceRender = false) {
         document.getElementById('show_next').style.display = 'none';
@@ -145,6 +149,10 @@
         delete signs_not_seen[id];
 
         const data = signs[id];
+        if (!id || !data) {
+          alert('ERROR: no id given!');
+          return;
+        }
         const oldId = p.getAttribute('data-id');
 
         const bg = 'url(./armatuurituled.jpeg) -' + data[0] + 'px -' + (data[1] - ( isDebug ? 15 : 0 )) + 'px no-repeat';
@@ -296,6 +304,6 @@
     </script>
 
     <p />
-    <a target="_blank" href="https://www.autodna.ee/blog/mida-armatuurituli-tahendab/">data</a>
+    <a target="_blank" href="https://www.autodna.ee/blog/mida-armatuurituli-tahendab/">data</a> | <a target="_blank" href="https://github.com/eritikass/armatuurituled">code</a>
   </body>
 </html>
