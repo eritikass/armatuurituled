@@ -92,11 +92,33 @@
         "64": [665, 270, 40, 'Probleemid kojameestega.'],
       };
 
-      const signs_correct = {};
-      const signs_wrong = {};
-      const signs_seen = {};
 
-      const signs_not_seen = JSON.parse(JSON.stringify(signs));
+      function getLocalStorage(name) {
+        const out = {};
+        try {
+          const data = JSON.parse(localStorage['armatuurituled']);
+          Object.keys(data[name]).forEach(k => {
+            if (signs[k] !== undefined) {
+              out[k] = '';
+            }
+          })
+
+        } catch {};
+
+        return out;
+      }
+
+      const signs_correct = getLocalStorage('signs_correct');
+      const signs_wrong = getLocalStorage('signs_wrong');
+      const signs_seen = getLocalStorage('signs_seen');
+      const signs_MARK = getLocalStorage('signs_MARK');
+
+      const signs_not_seen = {};
+      Object.keys(signs).forEach(k => {
+        if (signs_seen[k] === undefined) {
+          signs_not_seen[k] = '';
+        }
+      });
     </script>
   </html>
   <body>
@@ -113,6 +135,11 @@
     <button id="show_not_seen" style="display:none;">show not seen</button>
     <button id="show_wrong" style="display:none;">show wrong</button>
     <button id="show_next" style="display:none;">show random next</button>
+    <button id="show_marked" style="display:none;">show marked</button>
+
+    <br />
+    <button id="signs_mark_add" style="display:none;">mark: ADD</button>
+    <button id="signs_mark_remove" style="display:none;">mark: REMOVE</button>
 
     <br />
     <div id="summary"></div>
@@ -123,6 +150,17 @@
     </div>
 
     <script>
+      function saveLocalStorage() {
+        localStorage['armatuurituled'] = JSON.stringify({
+          signs_correct,
+          signs_wrong,
+          signs_seen,
+          signs_MARK,
+          signs_not_seen,
+        });
+      }
+
+
       const p = document.getElementById('armatuurituled');
       function getTitle(data) {
         if (typeof data[2] === 'string') {
@@ -140,10 +178,45 @@
         document.getElementById('summary').innerHTML = `wrong=<strong>${Object.keys(signs_wrong).length}</strong>;
           correct=<strong>${Object.keys(signs_correct).length}</strong>;
           seen=<strong>${Object.keys(signs_seen).length}</strong>;
-          total=<strong>${Object.keys(signs).length}</strong>`;
+          total=<strong>${Object.keys(signs).length}</strong>
+          mark=<strong>${Object.keys(signs_MARK).length}</strong>`;
+
+        saveLocalStorage();
+      }
+      function showMark(id) {
+        if (signs_MARK[id] !== undefined) {
+          document.getElementById('signs_mark_add').style.display = 'none';
+          document.getElementById('signs_mark_remove').style.display = 'block';
+        } else {
+          document.getElementById('signs_mark_add').style.display = 'block';
+          document.getElementById('signs_mark_remove').style.display = 'none';
+        }
+      }
+      function showBtnss() {
+        if (Object.keys(signs_wrong).length) {
+          document.getElementById('show_wrong').style.display = 'block';
+        } else {
+          document.getElementById('show_wrong').style.display = 'none';
+        }
+
+        if (Object.keys(signs_not_seen).length) {
+          document.getElementById('show_not_seen').style.display = 'block';
+        } else {
+          document.getElementById('show_not_seen').style.display = 'none';
+        }
+        document.getElementById('show_not_seen').innerHTML = `show not seen (${Object.keys(signs_not_seen).length})`;
+
+        if (Object.keys(signs_MARK).length) {
+          document.getElementById('show_marked').style.display = 'block';
+        } else {
+          document.getElementById('show_marked').style.display = 'none';
+        }
       }
       function showQuestion(id, forceRender = false) {
+        document.getElementById('show_not_seen').style.display = 'none';
+        document.getElementById('show_wrong').style.display = 'none';
         document.getElementById('show_next').style.display = 'none';
+        document.getElementById('show_marked').style.display = 'none';
 
         signs_seen[id] = '';
         delete signs_not_seen[id];
@@ -176,7 +249,6 @@
         const correct = (Math.floor(Math.random() * 4) + 1);
 
         const q1 = Object.values(signs).map(s => getTitle(s));
-        console.log('q1', q1);
         const used = [data[2]];
 
         document.getElementById(`answers`).setAttribute('data-first-correct', 'true');
@@ -199,8 +271,9 @@
           } while(true);
         }
 
-
+        showMark(id);
         showSummary();
+        saveLocalStorage();
       }
       function showNext() {
         const ids = Object.keys(signs);
@@ -217,12 +290,17 @@
         const nextId = ids[Math.floor(Math.random() * ids.length)];
         showQuestion(nextId, true);
       }
+      function showMarked() {
+        const ids = Object.keys(signs_MARK);
+        const nextId = ids[Math.floor(Math.random() * ids.length)];
+        showQuestion(nextId, true);
+      }
 
       p.addEventListener('click', function (event) {
         const id = p.getAttribute('data-id');
         if (id) {
           isDebug = !isDebug;
-          showQuestion(id);
+          showQuestion(id, true);
         }
       });
 
@@ -234,7 +312,36 @@
       });
       document.getElementById('show_not_seen').addEventListener(`click`, function (event) {
         showNotSeen();
+      })
+      document.getElementById('show_marked').addEventListener(`click`, function (event) {
+        showMarked();
       });
+      document.getElementById('signs_mark_add').addEventListener(`click`, function (event) {
+        const id = p.getAttribute('data-id');
+        signs_MARK[id] = '';
+        showMark(id);
+        showSummary();
+      });
+      document.getElementById('signs_mark_remove').addEventListener(`click`, function (event) {
+        const id = p.getAttribute('data-id');
+        delete signs_MARK[id];
+        showMark(id);
+        showSummary();
+      });
+
+      let clickTime = 0;
+      document.getElementById('summary').addEventListener(`click`, function (event) {
+        const isRepeat = (clickTime + 777) > +new Date();
+        if (isRepeat && confirm('do you want to nuke localStorage?')) {
+          localStorage['armatuurituled'] = {};
+          document.location.reload();
+        }
+        clickTime = +new Date();
+      });
+
+
+
+
 
       for (i = 1; i <= 4; i++) {
         ((ii) => {
@@ -251,17 +358,7 @@
                 signs_correct[id] = '';
               }
 
-              if (Object.keys(signs_wrong).length) {
-                document.getElementById('show_wrong').style.display = 'block';
-              } else {
-                document.getElementById('show_wrong').style.display = 'none';
-              }
-
-              if (Object.keys(signs_not_seen).length) {
-                document.getElementById('show_not_seen').style.display = 'block';
-              } else {
-                document.getElementById('show_not_seen').style.display = 'none';
-              }
+              showBtnss();
 
             } else {
               if (firstCorrect) {
@@ -271,6 +368,7 @@
             }
 
             showSummary();
+            saveLocalStorage();
           });
         })(i);
       }
